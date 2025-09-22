@@ -1,0 +1,53 @@
+#In enterprise environments, Splunk dashboards are rarely built only through the UI. They are defined in XML and managed with version control (like Git). 
+#This file defines a simple dashboard with two panels, directly reflecting the investigations from the README.
+
+<dashboard version="1.1">
+  <label>SOC Analyst Dashboard - Buttercup Games</label>
+  <row>
+    <panel>
+      <title>Failed SSH Root Login Attempts Over Time</title>
+      <chart>
+        <search>
+          <query>
+            index="main" host="mail.sv" sourcetype="linux_secure" "failed password for root" 
+            | timechart count by host
+          </query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top 10 Pages Generating 404 Errors</title>
+      <table>
+        <search>
+          <query>
+            index="main" sourcetype="access_combined_wcookie" status=404
+            | top limit=10 uri_path
+          </query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Top 10 User Agents Causing HTTP Errors</title>
+      <table>
+        <search>
+          <query>
+            index="main" sourcetype="access_combined_wcookie" status>=400
+            | top limit=10 UserAgent
+          </query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
